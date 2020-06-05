@@ -1,7 +1,6 @@
 package br.senai.sc.projetofinal;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,19 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import br.senai.sc.projetofinal.database.dao.EventDAO;
 import br.senai.sc.projetofinal.models.Event;
 
 public class MainActivity extends AppCompatActivity {
-//    private final int REQUEST_CODE_NEW_EVENT = 1;
-//    private final int RESULT_CODE_NEW_EVENT = 11;
-//    private final int REQUEST_CODE_EDIT_EVENT = 2;
-//    private final int RESULT_CODE_EDIT_EVENT = 12;
+
     private final int MENU_ITEM_DELETE = 1;
 
     private ListView listViewEvents;
@@ -110,31 +101,4 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        if (requestCode == REQUEST_CODE_NEW_EVENT && resultCode == RESULT_CODE_NEW_EVENT) {
-//            Event newEvent = (Event) data.getExtras().getSerializable("newEvent");
-//            newEvent.setId(++eventId);
-//            this.arrayAdapterEvent.add(newEvent);
-//            Toast.makeText(
-//                    MainActivity.this,
-//                    "Adicionado novo evento com id " + eventId + ".",
-//                    Toast.LENGTH_LONG).show();
-//        } else if (requestCode == REQUEST_CODE_EDIT_EVENT && resultCode == RESULT_CODE_EDIT_EVENT) {
-//            Event editedEvent = (Event) data.getExtras().getSerializable("editedEvent");
-//            for (int i = 0; i < arrayAdapterEvent.getCount(); i++) {
-//                Event currentEvent = arrayAdapterEvent.getItem(i);
-//                if (currentEvent.getId() == editedEvent.getId()) {
-//                    arrayAdapterEvent.remove(currentEvent);
-//                    arrayAdapterEvent.insert(editedEvent, i);
-//                    break;
-//                }
-//            }
-//            Toast.makeText(
-//                    MainActivity.this,
-//                    "Editado evento com id " + editedEvent.getId() + ".",
-//                    Toast.LENGTH_LONG).show();
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
 }

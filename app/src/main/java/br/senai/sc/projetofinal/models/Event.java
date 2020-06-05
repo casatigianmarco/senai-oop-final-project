@@ -3,12 +3,8 @@ package br.senai.sc.projetofinal.models;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class Event implements Serializable {
     private int id;
@@ -26,7 +22,7 @@ public class Event implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return id + " - " + name + " \n( " + place + ", " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " )" ;
+        return name + " \n( " + place + ", " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " )" ;
     }
 
     public int getId() {
@@ -60,4 +56,5 @@ public class Event implements Serializable {
     public void setPlace(String place) {
         this.place = place;
     }
+
 }

@@ -8,21 +8,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import br.senai.sc.projetofinal.database.dao.EventDAO;
 import br.senai.sc.projetofinal.models.Event;
 
 public class NewEventActivity extends AppCompatActivity {
-
-    private final int RESULT_CODE_NEW_EVENT = 11;
-    private final int RESULT_CODE_EDIT_EVENT = 12;
 
     private int eventId = 0;
 
@@ -84,7 +77,7 @@ public class NewEventActivity extends AppCompatActivity {
             } catch (DateTimeParseException e) {
                 Toast.makeText(
                         NewEventActivity.this,
-                        "Formato de data inválido. Tente novamente. (Ex. 01/01/2020)",
+                        "Formato de data inválido. Tente novamente. (Ex. dd/MM/yyyy)",
                         Toast.LENGTH_LONG).show();
             }
         } else if (name.trim().isEmpty()) {
