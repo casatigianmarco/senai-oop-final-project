@@ -10,9 +10,13 @@ import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import br.senai.sc.projetofinal.database.dao.EventDAO;
 import br.senai.sc.projetofinal.models.Event;
 
 public class NewEventActivity extends AppCompatActivity {
@@ -21,7 +25,6 @@ public class NewEventActivity extends AppCompatActivity {
     private final int RESULT_CODE_EDIT_EVENT = 12;
 
     private int eventId = 0;
-    private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class NewEventActivity extends AppCompatActivity {
             EditText editTextDate = findViewById(R.id.editText_date);
             EditText editTextPlace = findViewById(R.id.editText_place);
             editTextName.setText(event.getName());
-            editTextDate.setText(format.format(event.getDate()));
+            editTextDate.setText(event.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             editTextPlace.setText(event.getPlace());
             eventId = event.getId();
             setTitle("Editar Evento");
@@ -62,22 +65,23 @@ public class NewEventActivity extends AppCompatActivity {
         String dateString = editTextDate.getText().toString();
         if (!name.trim().isEmpty() && !dateString.isEmpty() && !place.trim().isEmpty()) {
             try {
-                Date date = format.parse(editTextDate.getText().toString());
+                LocalDate date = LocalDate.parse(editTextDate.getText().toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 Toast.makeText(
                         NewEventActivity.this,
                         "Salvar ...",
                         Toast.LENGTH_SHORT).show();
                 Event event = new Event(eventId, name, date, place);
-                Intent intent = new Intent();
-                if (eventId != 0) {
-                    intent.putExtra("editedEvent", event);
-                    setResult(RESULT_CODE_EDIT_EVENT, intent);
+                EventDAO eventDAO = new EventDAO(getBaseContext());
+                if(eventDAO.save(event)) {
+                    finish();
                 } else {
-                    intent.putExtra("newEvent", event);
-                    setResult(RESULT_CODE_NEW_EVENT, intent);
+                    Toast.makeText(
+                            NewEventActivity.this,
+                            "Erro ao salvar o evento!",
+                            Toast.LENGTH_LONG);
                 }
-                finish();
-            } catch (ParseException e) {
+
+            } catch (DateTimeParseException e) {
                 Toast.makeText(
                         NewEventActivity.this,
                         "Formato de data inválido. Tente novamente. (Ex. 01/01/2020)",

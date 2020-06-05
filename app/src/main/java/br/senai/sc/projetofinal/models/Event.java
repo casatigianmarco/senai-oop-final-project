@@ -3,16 +3,20 @@ package br.senai.sc.projetofinal.models;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Event implements Serializable {
     private int id;
     private String name;
-    private Date date;
+    private LocalDate date;
     private String place;
 
-    public Event(int id, String name, Date date, String place) {
+    public Event(int id, String name, LocalDate date, String place) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -22,8 +26,7 @@ public class Event implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        return name + " \n( " + place + ", " + format.format(date) + " )" ;
+        return id + " - " + name + " \n( " + place + ", " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " )" ;
     }
 
     public int getId() {
@@ -42,11 +45,11 @@ public class Event implements Serializable {
         this.name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

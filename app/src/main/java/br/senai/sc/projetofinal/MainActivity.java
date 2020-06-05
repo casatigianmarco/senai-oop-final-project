@@ -20,13 +20,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import br.senai.sc.projetofinal.database.dao.EventDAO;
 import br.senai.sc.projetofinal.models.Event;
 
 public class MainActivity extends AppCompatActivity {
-    private final int REQUEST_CODE_NEW_EVENT = 1;
-    private final int RESULT_CODE_NEW_EVENT = 11;
-    private final int REQUEST_CODE_EDIT_EVENT = 2;
-    private final int RESULT_CODE_EDIT_EVENT = 12;
+//    private final int REQUEST_CODE_NEW_EVENT = 1;
+//    private final int RESULT_CODE_NEW_EVENT = 11;
+//    private final int REQUEST_CODE_EDIT_EVENT = 2;
+//    private final int RESULT_CODE_EDIT_EVENT = 12;
     private final int MENU_ITEM_DELETE = 1;
 
     private ListView listViewEvents;
@@ -39,14 +40,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle("Eventos");
         listViewEvents = findViewById(R.id.listView_events);
+        defineOnClickListenerListView();
+        defineContextMenuListenerListView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventDAO eventDAO = new EventDAO(getBaseContext());
         arrayAdapterEvent = new ArrayAdapter<Event>(
                 MainActivity.this,
                 android.R.layout.simple_list_item_1,
-                new ArrayList<Event>()
+                eventDAO.getAll()
         );
         listViewEvents.setAdapter(arrayAdapterEvent);
-        defineOnClickListenerListView();
-        defineContextMenuListenerListView();
     }
 
     private void defineOnClickListenerListView() {
@@ -56,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 Event clickedEvent = arrayAdapterEvent.getItem(position);
                 Intent intent = new Intent(MainActivity.this, NewEventActivity.class);
                 intent.putExtra("eventToEdit", clickedEvent);
-                startActivityForResult(intent, REQUEST_CODE_EDIT_EVENT);
+                startActivity(intent);
             }
         });
     }
@@ -87,40 +94,47 @@ public class MainActivity extends AppCompatActivity {
 
     private int deleteEvent(int position) {
         Event event = arrayAdapterEvent.getItem(position);
-        arrayAdapterEvent.remove(event);
-        return eventId;
+        EventDAO eventDAO = new EventDAO(getBaseContext());
+        eventDAO.delete(event);
+        arrayAdapterEvent = new ArrayAdapter<Event>(
+                MainActivity.this,
+                android.R.layout.simple_list_item_1,
+                eventDAO.getAll()
+        );
+        listViewEvents.setAdapter(arrayAdapterEvent);
+        return event.getId();
     }
 
     public void onClickNewEvent(View view) {
         Intent intent = new Intent(MainActivity.this, NewEventActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_NEW_EVENT);
+        startActivity(intent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_CODE_NEW_EVENT && resultCode == RESULT_CODE_NEW_EVENT) {
-            Event newEvent = (Event) data.getExtras().getSerializable("newEvent");
-            newEvent.setId(++eventId);
-            this.arrayAdapterEvent.add(newEvent);
-            Toast.makeText(
-                    MainActivity.this,
-                    "Adicionado novo evento com id " + eventId + ".",
-                    Toast.LENGTH_LONG).show();
-        } else if (requestCode == REQUEST_CODE_EDIT_EVENT && resultCode == RESULT_CODE_EDIT_EVENT) {
-            Event editedEvent = (Event) data.getExtras().getSerializable("editedEvent");
-            for (int i = 0; i < arrayAdapterEvent.getCount(); i++) {
-                Event currentEvent = arrayAdapterEvent.getItem(i);
-                if (currentEvent.getId() == editedEvent.getId()) {
-                    arrayAdapterEvent.remove(currentEvent);
-                    arrayAdapterEvent.insert(editedEvent, i);
-                    break;
-                }
-            }
-            Toast.makeText(
-                    MainActivity.this,
-                    "Editado evento com id " + editedEvent.getId() + ".",
-                    Toast.LENGTH_LONG).show();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        if (requestCode == REQUEST_CODE_NEW_EVENT && resultCode == RESULT_CODE_NEW_EVENT) {
+//            Event newEvent = (Event) data.getExtras().getSerializable("newEvent");
+//            newEvent.setId(++eventId);
+//            this.arrayAdapterEvent.add(newEvent);
+//            Toast.makeText(
+//                    MainActivity.this,
+//                    "Adicionado novo evento com id " + eventId + ".",
+//                    Toast.LENGTH_LONG).show();
+//        } else if (requestCode == REQUEST_CODE_EDIT_EVENT && resultCode == RESULT_CODE_EDIT_EVENT) {
+//            Event editedEvent = (Event) data.getExtras().getSerializable("editedEvent");
+//            for (int i = 0; i < arrayAdapterEvent.getCount(); i++) {
+//                Event currentEvent = arrayAdapterEvent.getItem(i);
+//                if (currentEvent.getId() == editedEvent.getId()) {
+//                    arrayAdapterEvent.remove(currentEvent);
+//                    arrayAdapterEvent.insert(editedEvent, i);
+//                    break;
+//                }
+//            }
+//            Toast.makeText(
+//                    MainActivity.this,
+//                    "Editado evento com id " + editedEvent.getId() + ".",
+//                    Toast.LENGTH_LONG).show();
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 }
