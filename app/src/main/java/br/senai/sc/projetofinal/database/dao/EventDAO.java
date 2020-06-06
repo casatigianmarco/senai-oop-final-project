@@ -16,6 +16,10 @@ import br.senai.sc.projetofinal.models.Event;
 public class EventDAO {
 
     private final String SQL_GET_ALL = "SELECT * FROM " + EventEntity.TABLE_NAME;
+    private final String SQL_GET_BY_NAME = "SELECT * FROM " + EventEntity.TABLE_NAME + " WHERE " + EventEntity.COLUMN_NAME_NAME + " LIKE ?";
+    private final String SQL_ORDER_BY_NAME_ASC = "SELECT * FROM " + EventEntity.TABLE_NAME + " ORDER BY " + EventEntity.COLUMN_NAME_NAME + " ASC";
+    private final String SQL_ORDER_BY_NAME_DESC = "SELECT * FROM " + EventEntity.TABLE_NAME + " ORDER BY " + EventEntity.COLUMN_NAME_NAME + " DESC";
+
     private DBGateway dbGateway;
 
     public EventDAO(Context context) {
@@ -42,8 +46,27 @@ public class EventDAO {
     }
 
     public List<Event> getAll() {
-        List<Event> events = new ArrayList<Event>();
         Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_GET_ALL, null);
+        return getEvents(cursor);
+    }
+
+    public List<Event> getByName(String filter) {
+        Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_GET_BY_NAME, new String[] {filter + "%"});
+        return getEvents(cursor);
+    }
+
+    public List<Event> orderByNameAsc() {
+        Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_ORDER_BY_NAME_ASC, null);
+        return getEvents(cursor);
+    }
+
+    public List<Event> orderByNameDesc() {
+        Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_ORDER_BY_NAME_DESC, null);
+        return getEvents(cursor);
+    }
+
+    private List<Event> getEvents(Cursor cursor) {
+        List<Event> events = new ArrayList<Event>();
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex(EventEntity._ID));
             String name = cursor.getString(cursor.getColumnIndex(EventEntity.COLUMN_NAME_NAME));

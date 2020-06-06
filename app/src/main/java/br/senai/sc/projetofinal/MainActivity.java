@@ -5,14 +5,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.List;
 
 import br.senai.sc.projetofinal.database.dao.EventDAO;
 import br.senai.sc.projetofinal.models.Event;
@@ -22,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private final int MENU_ITEM_DELETE = 1;
 
     private ListView listViewEvents;
+    private EditText editTextFilterName;
     private ArrayAdapter<Event> arrayAdapterEvent;
-    int eventId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +36,39 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle("Eventos");
         listViewEvents = findViewById(R.id.listView_events);
+        editTextFilterName = findViewById(R.id.editText_filterName);
         defineOnClickListenerListView();
         defineContextMenuListenerListView();
+        defineTextChangedListenerFilterName();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         EventDAO eventDAO = new EventDAO(getBaseContext());
+        populateAdapter(eventDAO.getAll());
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int position = ((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position;
+        switch (item.getItemId()) {
+            case MENU_ITEM_DELETE:
+                int id = deleteEvent(position);
+                Toast.makeText(
+                        MainActivity.this,
+                        "Eliminado evento com id " + id + ".",
+                        Toast.LENGTH_LONG).show();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void populateAdapter(List<Event> events) {
         arrayAdapterEvent = new ArrayAdapter<Event>(
                 MainActivity.this,
                 android.R.layout.simple_list_item_1,
-                eventDAO.getAll()
+                events
         );
         listViewEvents.setAdapter(arrayAdapterEvent);
     }
@@ -68,37 +94,53 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int position = ((AdapterView.AdapterContextMenuInfo)item.getMenuInfo()).position;
-        switch (item.getItemId()) {
-            case MENU_ITEM_DELETE:
-                int id = deleteEvent(position);
-                Toast.makeText(
-                        MainActivity.this,
-                        "Eliminado evento com id " + id + ".",
-                        Toast.LENGTH_LONG).show();
-                break;
-        }
-        return super.onContextItemSelected(item);
+    private void defineTextChangedListenerFilterName() {
+        editTextFilterName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String filter = s.toString().trim();
+                if(!filter.isEmpty()) {
+                    EventDAO eventDAO = new EventDAO(getBaseContext());
+                    populateAdapter(eventDAO.getByName(filter));
+                } else {
+                    EventDAO eventDAO = new EventDAO(getBaseContext());
+                    populateAdapter(eventDAO.getAll());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private int deleteEvent(int position) {
         Event event = arrayAdapterEvent.getItem(position);
         EventDAO eventDAO = new EventDAO(getBaseContext());
         eventDAO.delete(event);
-        arrayAdapterEvent = new ArrayAdapter<Event>(
-                MainActivity.this,
-                android.R.layout.simple_list_item_1,
-                eventDAO.getAll()
-        );
-        listViewEvents.setAdapter(arrayAdapterEvent);
+        populateAdapter(eventDAO.getAll());
         return event.getId();
     }
 
     public void onClickNewEvent(View view) {
         Intent intent = new Intent(MainActivity.this, NewEventActivity.class);
         startActivity(intent);
+    }
+
+    public void onClickAsc(View view) {
+        EventDAO eventDAO = new EventDAO(getBaseContext());
+        populateAdapter(eventDAO.orderByNameAsc());
+    }
+
+    public void onClickDesc(View view) {
+        EventDAO eventDAO = new EventDAO(getBaseContext());
+        populateAdapter(eventDAO.orderByNameDesc());
     }
 
 }

@@ -7,15 +7,46 @@
     android:orientation="vertical"
     tools:context=".MainActivity" >
 
+    <EditText
+        android:id="@+id/editText_filterName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
     <ListView
         android:id="@+id/listView_events"
         android:layout_width="match_parent"
-        android:layout_height="400dp" />
+        android:layout_height="300dp" />
 
-    <Button
-        android:id="@+id/button_newEvent"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onClickNewEvent"
-        android:text="Novo Evento" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_asc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickAsc"
+            android:text="Asc" />
+
+        <Button
+            android:id="@+id/button_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickDesc"
+            android:text="Desc" />
+
+        <Button
+            android:id="@+id/button_newEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickNewEvent"
+            android:text="Novo Evento" />
+
+    </LinearLayout>
+
 </LinearLayout>
