@@ -51,7 +51,7 @@ public class EventDAO {
     }
 
     public List<Event> getByName(String filter) {
-        Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_GET_BY_NAME, new String[] {filter + "%"});
+        Cursor cursor = dbGateway.getDatabase().rawQuery(SQL_GET_BY_NAME, new String[] {"%" + filter + "%"});
         return getEvents(cursor);
     }
 
